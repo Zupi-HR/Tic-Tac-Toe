@@ -1,3 +1,16 @@
-.row {
+body {
     display: flex;
+    justify-content: center;
 }
+
+.gameboard { 
+    display: grid;
+    grid-template-columns: repeat(3, 100px);
+    grid-template-rows: repeat(3, 100px);
+}
+
+.cell {
+    border: 1px solid black;
+    font-size: 50px;
+}
+
