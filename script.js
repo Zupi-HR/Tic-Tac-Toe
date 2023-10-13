@@ -13,7 +13,8 @@ const GameBoard = (function () {
   return { gameboard, placeMarkAt };
 })();
 
-GameBoard.placeMarkAt(1, 1, 'Neven', 'X');
+GameBoard.placeMarkAt(1, 0, 'Neven', 'O');
+
 
 const DisplayController = (function () {
   const GameBoardElement = document.querySelector('.gameboard');
