@@ -20,14 +20,20 @@ const DisplayController = (function () {
   const GameBoardElement = document.querySelector('.gameboard');
   for (let i = 0; i < GameBoard.gameboard.length; i++) {
     const cell = document.createElement('div');
-    cell.setAttribute('position', i);
     cell.classList.add('cell');
     cell.addEventListener('click', function() {
-      GameBoard.placeMarkAt(parseInt(cell.getAttribute('position')), 'SomePlayer', 'X');
-      cell.textContent = GameBoard.gameboard[parseInt(cell.getAttribute('position'))];
+      if(GameBoard.gameboard[i] === null) {
+        GameBoard.placeMarkAt(i, 'SomePlayer', 'X');
+        cell.textContent = GameBoard.gameboard[i];
+      }
     })
     GameBoardElement.append(cell);
   }
 
 })();
+
+
+
+
+
 
