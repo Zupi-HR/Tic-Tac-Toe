@@ -1,6 +1,7 @@
 body {
     display: flex;
     justify-content: center;
+    gap: 20px;
 }
 
 .gameboard { 
@@ -12,5 +13,17 @@ body {
 .cell {
     border: 1px solid black;
     font-size: 50px;
+}
+
+.firstPlayer, .secondPlayer {
+    font-size: 25px;
+}
+
+.firstPlayer {
+    color: red;
+}
+
+.secondPlayer {
+    color: blue;
 }
 

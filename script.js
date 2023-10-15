@@ -4,45 +4,59 @@ const GameBoard = (function () {
     null, null, null,
     null, null, null
   ];
- let Player1Turn = false;
- let Player2Turn = false;
+
 
   function placeMarkAt(cell) {
-    Player1Turn = !Player1Turn;
-    gameboard[cell] = GameFlowController.changePlayerStatus(Player1Turn, Player2Turn);
-    Player2Turn = !Player2Turn;
+    gameboard[cell] = GameFlowController.togglePlayerTurn();
+
   }
 
   return { gameboard, placeMarkAt };
 })();
 
-const GameFlowController = (function() {
+const GameFlowController = (function () {
+  let isPlayer1Turn = false;
+  let isPlayer2Turn = false;
 
-   const Player1 = createPlayer('Župi', 'X');
-   const Player2 = createPlayer('Brada', 'O');
+  const player1 = createPlayer('Župi', 'X');
+  const player2 = createPlayer('Brada', 'O');
 
-   function changePlayerStatus (player1Status, player2status) {
-     if (player1Status) {
-      return Player1.Mark;
-     } else if (player2status) {
-      return Player2.Mark;
-     }
-   }
+  function getPlayerNames(mark) {
+    if (mark === 'X') return player1.Name;
+    else {
+      return player2.Name;
+    }
+  }
 
-   return {changePlayerStatus}
+  function togglePlayerTurn() {
+    isPlayer1Turn = !isPlayer1Turn;
+    if (isPlayer1Turn) {
+      isPlayer2Turn = !isPlayer2Turn;
+      return player1.Mark;
+    } else if (isPlayer2Turn) {
+      isPlayer2Turn = !isPlayer2Turn;
+      return player2.Mark;
+    }
+  }
+
+  return { getPlayerNames, togglePlayerTurn }
 })();
 
-console.log(GameFlowController);
 
 
 const DisplayController = (function () {
+  const firstPlayerNameElement = document.querySelector('.firstPlayer');
+  firstPlayerNameElement.textContent = GameFlowController.getPlayerNames('X');
+  const secondPlayerNameElement = document.querySelector('.secondPlayer');
+  secondPlayerNameElement.textContent = GameFlowController.getPlayerNames('O');
   const GameBoardElement = document.querySelector('.gameboard');
   for (let i = 0; i < GameBoard.gameboard.length; i++) {
     const cell = document.createElement('div');
     cell.classList.add('cell');
-    cell.addEventListener('click', function() {
-      if(GameBoard.gameboard[i] === null) {
+    cell.addEventListener('click', function () {
+      if (GameBoard.gameboard[i] === null) {
         GameBoard.placeMarkAt(i);
+
         cell.textContent = GameBoard.gameboard[i];
       }
     })
@@ -52,7 +66,7 @@ const DisplayController = (function () {
 })();
 
 function createPlayer(name, mark) {
- return {Name: name, Mark: mark};
+  return { Name: name, Mark: mark };
 }
 
 
