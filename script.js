@@ -24,10 +24,10 @@ const GameBoard = (function () {
     // Step 2: Define potential winning combinations
     const winningCombination = [[0, 1, 2], [0, 3, 6], [3, 4, 5], [6, 7, 8], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]];
-   // step 3: Iterate through the potential winning combinations.
+    // step 3: Iterate through the potential winning combinations.
     for (let i = 0; i < winningCombination.length; i++) {
       let foundWinner = false;
-   // step 4:Iterate through the positions in each potential winning combination.
+      // step 4:Iterate through the positions in each potential winning combination.
       for (let j = 0; j < winningCombination[i].length; j++) {
         // Step 5: Check if player has marked all three positions in a winning combination.
         if (indices.length === 3 && indices.every(val => winningCombination[i].includes(val))) {
@@ -36,7 +36,7 @@ const GameBoard = (function () {
           break;
         }
       }
-        if (foundWinner) break;
+      if (foundWinner) break;
     }
 
   }
