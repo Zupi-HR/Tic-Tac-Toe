@@ -11,7 +11,38 @@ const GameBoard = (function () {
 
   }
 
-  return { gameboard, placeMarkAt };
+
+
+  function checkForWin() {
+    // Step 1: Extract the positions where 'X' marks are placed on the board.
+    let indices = gameboard.map((element, index) => {
+      if (element === 'X') {
+        return index;
+      }
+    }).filter(filteredINdex => filteredINdex !== undefined);
+    console.log(indices);
+    // Step 2: Define potential winning combinations
+    const winningCombination = [[0, 1, 2], [0, 3, 6], [3, 4, 5], [6, 7, 8], [1, 4, 7], [2, 5, 8],
+    [0, 4, 8], [2, 4, 6]];
+   // step 3: Iterate through the potential winning combinations.
+    for (let i = 0; i < winningCombination.length; i++) {
+      let foundWinner = false;
+   // step 4:Iterate through the positions in each potential winning combination.
+      for (let j = 0; j < winningCombination[i].length; j++) {
+        // Step 5: Check if player has marked all three positions in a winning combination.
+        if (indices.length === 3 && indices.every(val => winningCombination[i].includes(val))) {
+          console.log('you won');
+          foundWinner = true;
+          break;
+        }
+      }
+        if (foundWinner) break;
+    }
+
+  }
+
+
+  return { gameboard, placeMarkAt, checkForWin };
 })();
 
 const GameFlowController = (function () {
@@ -56,8 +87,8 @@ const DisplayController = (function () {
     cell.addEventListener('click', function () {
       if (GameBoard.gameboard[i] === null) {
         GameBoard.placeMarkAt(i);
-
         cell.textContent = GameBoard.gameboard[i];
+        GameBoard.checkForWin();
       }
     })
     GameBoardElement.append(cell);
@@ -68,6 +99,8 @@ const DisplayController = (function () {
 function createPlayer(name, mark) {
   return { Name: name, Mark: mark };
 }
+
+
 
 
 
