@@ -39,6 +39,7 @@ const GameBoard = (function () {
         if (winningCombination[i].every(element => indices.includes(element))) {
           console.log(`${GameFlowController.getPlayerNames(mark)} has won`);
           foundWinner = true;
+          break;
         }
       }
     }
