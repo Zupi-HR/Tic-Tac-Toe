@@ -1,5 +1,13 @@
 body {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+.container {
+    display: flex;
     justify-content: center;
     gap: 20px;
 }
