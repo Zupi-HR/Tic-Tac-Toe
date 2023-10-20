@@ -31,13 +31,11 @@ const GameBoard = (function () {
     //Check for a winning combination
     if (indices.length >= 3) {
       for (let i = 0; i < winningCombination.length && !foundWinner; i++) {
-        for (let j = 0; j < winningCombination[i].length; j++) {
           if (winningCombination[i].every(element => indices.includes(element))) {
             console.log('you won');
             foundWinner = true;
             break;
           }
-        }
       }
     }
   }
@@ -103,7 +101,6 @@ const DisplayController = (function () {
 function createPlayer(name, mark) {
   return { Name: name, Mark: mark };
 }
-
 
 
 
