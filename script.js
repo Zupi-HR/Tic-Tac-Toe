@@ -20,19 +20,19 @@ const GameBoard = (function () {
 
   }
 
-  function checkThreeInARow(mark) {
+  function checkThreeInArow(mark) {
     return gameboard.map((element, index) => {
       if (element === mark) {
         return index;
       }
-    }).filter(filteredINdex => filteredINdex !== undefined);
+    }).filter(filteredIndex => filteredIndex !== undefined);
   }
 
   // check if there's a winner
   function evaluateWinCondition(mark) {
     let isWinnerFound = false;
 
-    const indices = checkThreeInARow(mark);
+    const indices = checkThreeInArow(mark);
 
 
     console.log(indices);
@@ -55,7 +55,7 @@ const GameBoard = (function () {
   }
 
 
-  return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, checkThreeInARow, evaluateWinCondition };
+  return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, checkThreeInArow, evaluateWinCondition };
 })();
 
 const GameFlowController = (function () {
