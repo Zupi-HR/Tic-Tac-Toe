@@ -20,17 +20,17 @@ const GameBoard = (function () {
 
   }
 
+  function checkThreeInARow(mark) {
+    return gameboard.map((element, index) => {
+      if (element === mark) {
+        return index;
+      }
+    }).filter(filteredINdex => filteredINdex !== undefined);
+  }
+
   // check if there's a winner
   function evaluateWinCondition(mark) {
-    let foundWinner = false;
-
-    function checkThreeInARow(mark) {
-      return gameboard.map((element, index) => {
-        if (element === mark) {
-          return index;
-        }
-      }).filter(filteredINdex => filteredINdex !== undefined);
-    }
+    let isWinnerFound = false;
 
     const indices = checkThreeInARow(mark);
 
@@ -43,23 +43,19 @@ const GameBoard = (function () {
 
     //Check for a winning combination
     if (indices.length >= 3) {
-      for (let i = 0; i < winningCombination.length && !foundWinner; i++) {
+      for (let i = 0; i < winningCombination.length && !isWinnerFound; i++) {
         if (winningCombination[i].every(element => indices.includes(element))) {
           console.log(`${GameFlowController.getPlayerNameByMark(mark)} has won`);
-          foundWinner = true;
+          isWinnerFound = true;
           break;
         }
       }
     }
-    if (foundWinner) {
-      return `${GameFlowController.getPlayerNameByMark(mark)}`
-    } else {
-      return ''
-    }
+    return isWinnerFound;
   }
 
 
-  return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, evaluateWinCondition };
+  return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, checkThreeInARow, evaluateWinCondition };
 })();
 
 const GameFlowController = (function () {
@@ -84,7 +80,7 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { getPlayerNameByMark, getActivePlayer, togglePlayerTurn, }
+  return { getPlayerNameByMark, getActivePlayer, togglePlayerTurn }
 })();
 
 
@@ -96,24 +92,26 @@ const DisplayController = (function () {
   const secondPlayerNameElement = document.querySelector('.secondPlayer');
   secondPlayerNameElement.textContent = GameFlowController.getPlayerNameByMark('O');
 
+  
   const winnerMessage = document.querySelector('.winner-message');
-
+  let foundWinner = false;
   //Initialize the game board on the screen
   const GameBoardElement = document.querySelector('.gameboard');
   for (let i = 0; i < GameBoard.getTotalBoardCells(); i++) {
     const cell = document.createElement('div');
     cell.classList.add('cell');
-
     //add click event listener to each cell
     cell.addEventListener('click', function () {
-      if (GameBoard.getCellValueAtIndex(i) === null) {
+      if (GameBoard.getCellValueAtIndex(i) === null && !foundWinner) {
         GameBoard.placeMarkAt(i);
         cell.textContent = GameBoard.getCellValueAtIndex(i);
         GameFlowController.togglePlayerTurn(cell.textContent);
-        winnerMessage.textContent = `Winner is: ${GameBoard.evaluateWinCondition(cell.textContent)}`;
-
+       foundWinner = GameBoard.evaluateWinCondition(cell.textContent);
+        winnerMessage.textContent = `Winner is: ${GameFlowController.getPlayerNameByMark(cell.textContent)}`;
       }
-    })
+    });
+   
+    
     GameBoardElement.append(cell);
   }
 
