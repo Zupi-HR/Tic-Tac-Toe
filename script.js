@@ -16,7 +16,7 @@ const GameBoard = (function () {
 
   //place a mark on the board at a specific cell
   function placeMarkAt(cell) {
-    gameboard[cell] = GameFlowController.getActivePlayer();
+    gameboard[cell] = GameFlowController.getCurrentPlayerMark();
 
   }
 
@@ -29,8 +29,7 @@ const GameBoard = (function () {
   }
 
   // check if there's a winner
-  function evaluateWinCondition(mark) {
-    let isWinnerFound = false;
+  function checkForWinner(mark) {
 
     const indices = checkThreeInArow(mark);
 
@@ -43,19 +42,22 @@ const GameBoard = (function () {
 
     //Check for a winning combination
     if (indices.length >= 3) {
-      for (let i = 0; i < winningCombination.length && !isWinnerFound; i++) {
-        if (winningCombination[i].every(element => indices.includes(element))) {
-          console.log(`${GameFlowController.getPlayerNameByMark(mark)} has won`);
-          isWinnerFound = true;
+      for (let i = 0; i < winningCombination.length; i++) {
+        const winState = winningCombination[i].every(element => indices.includes(element))
+        if (winState) {
+          GameFlowController.setWinnerState(winState);
+          console.log(`${GameFlowController.getPlayerName(mark)} has won`);
           break;
         }
+
+
       }
     }
-    return isWinnerFound;
+    return GameFlowController.hasWinner();
   }
 
 
-  return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, checkThreeInArow, evaluateWinCondition };
+  return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, checkThreeInArow, checkForWinner };
 })();
 
 const GameFlowController = (function () {
@@ -66,35 +68,44 @@ const GameFlowController = (function () {
   // set current player
   let currentPlayer = player1;
 
+  let isWinnerFound = false;
+
+  function hasWinner() {
+    return isWinnerFound;
+  }
+
+  function setWinnerState(state) {
+    if (state) isWinnerFound = true;
+  }
+
   // get player names for DOM
-  function getPlayerNameByMark(mark) {
+  function getPlayerName(mark) {
     return (mark === 'X') ? player1.name : player2.name;
   }
 
-  function getActivePlayer() {
+  function getCurrentPlayerMark() {
     return currentPlayer.mark;
   }
 
   // toggle the player's turn 
-  function togglePlayerTurn(mark) {
+  function switchPlayer(mark) {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { getPlayerNameByMark, getActivePlayer, togglePlayerTurn }
+  return { getPlayerName, getCurrentPlayerMark, switchPlayer, hasWinner, setWinnerState }
 })();
 
 
 
 const DisplayController = (function () {
   //Initialize the DOM elements for player names
-  const firstPlayerNameElement = document.querySelector('.firstPlayer');
-  firstPlayerNameElement.textContent = GameFlowController.getPlayerNameByMark('X');
-  const secondPlayerNameElement = document.querySelector('.secondPlayer');
-  secondPlayerNameElement.textContent = GameFlowController.getPlayerNameByMark('O');
+  const playerOneNameElement = document.querySelector('.firstPlayer');
+  playerOneNameElement.textContent = GameFlowController.getPlayerName('X');
+  const playerTwoNameElement = document.querySelector('.secondPlayer');
+  playerTwoNameElement.textContent = GameFlowController.getPlayerName('O');
 
-  
-  const winnerMessage = document.querySelector('.winner-message');
-  let foundWinner = false;
+
+  const winnerAnnouncement = document.querySelector('.winner-message');
   //Initialize the game board on the screen
   const GameBoardElement = document.querySelector('.gameboard');
   for (let i = 0; i < GameBoard.getTotalBoardCells(); i++) {
@@ -102,16 +113,18 @@ const DisplayController = (function () {
     cell.classList.add('cell');
     //add click event listener to each cell
     cell.addEventListener('click', function () {
-      if (GameBoard.getCellValueAtIndex(i) === null && !foundWinner) {
+      if (GameBoard.getCellValueAtIndex(i) === null && !GameFlowController.hasWinner()) {
         GameBoard.placeMarkAt(i);
         cell.textContent = GameBoard.getCellValueAtIndex(i);
-        GameFlowController.togglePlayerTurn(cell.textContent);
-       foundWinner = GameBoard.evaluateWinCondition(cell.textContent);
-        winnerMessage.textContent = `Winner is: ${GameFlowController.getPlayerNameByMark(cell.textContent)}`;
+        GameFlowController.switchPlayer(cell.textContent);
+        GameBoard.checkForWinner(cell.textContent);
+        if (GameFlowController.hasWinner()) {
+          winnerAnnouncement.textContent = `Winner is: ${GameFlowController.getPlayerName(cell.textContent)}`;
+        }
       }
     });
-   
-    
+
+
     GameBoardElement.append(cell);
   }
 
@@ -121,7 +134,6 @@ const DisplayController = (function () {
 function createPlayer(name, mark) {
   return { name, mark };
 }
-
 
 
 
