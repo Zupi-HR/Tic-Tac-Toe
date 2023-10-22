@@ -27,6 +27,10 @@ const GameBoard = (function () {
 })();
 
 const GameFlowController = (function () {
+  function createPlayer(name, mark) {
+    return {name, mark}
+  }
+
   //Initialize players
   const player1 = createPlayer('Župi', 'X');
   const player2 = createPlayer('Brada', 'O');
@@ -45,7 +49,10 @@ const GameFlowController = (function () {
   }
 
   function isTieCheck() {
-    isTied = GameBoard.getGameBoardArray().every(cell => cell !== null);
+    const gameboard = GameBoard.getGameBoardArray().every(cell => cell !== null);
+    if(gameboard) {
+      console.log('is tied');
+    }
   }
 
   function checkForWinner(mark) {
@@ -55,7 +62,7 @@ const GameFlowController = (function () {
     const winningCombination = [[0, 1, 2], [0, 3, 6], [3, 4, 5], [6, 7, 8], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]];
 
-    if (indices.length >= 3) {
+    if (indices.length >= 3 && !isTied) {
       for (let i = 0; i < winningCombination.length; i++) {
         isWinnerFound = winningCombination[i].every(element => indices.includes(element))
         if (isWinnerFound) {
@@ -64,10 +71,6 @@ const GameFlowController = (function () {
         }
       }
     }
-    if (indices.length >= 3 && !isWinnerFound && isTied) {
-      console.log('is tied');
-    }
-
   }
 
   function hasWinner() {
@@ -94,29 +97,30 @@ const GameFlowController = (function () {
 
 
 const DisplayController = (function () {
-  //Initialize the DOM elements for player names
-  const playerOneNameElement = document.querySelector('.firstPlayer');
+  function getElement(element) {
+    return document.querySelector(`${element}`);
+   }
+
+  const playerOneNameElement = getElement('.firstPlayer');
   playerOneNameElement.textContent = GameFlowController.getPlayerName('X');
-  const playerTwoNameElement = document.querySelector('.secondPlayer');
+  const playerTwoNameElement = getElement('.secondPlayer');
   playerTwoNameElement.textContent = GameFlowController.getPlayerName('O');
 
-
-  const winnerAnnouncement = document.querySelector('.winner-message');
-  //Initialize the game board on the screen
-  const GameBoardElement = document.querySelector('.gameboard');
+  const winnerAnnouncement = getElement('.winner-message');
+  const GameBoardElement = getElement('.gameboard');
   for (let i = 0; i < GameBoard.getTotalBoardCells(); i++) {
     const cell = document.createElement('div');
     cell.classList.add('cell');
-    //add click event listener to each cell
     cell.addEventListener('click', function () {
       if (GameBoard.getCellValueAtIndex(i) === null && !GameFlowController.hasWinner()) {
         GameBoard.placeMarkAt(i);
         cell.textContent = GameBoard.getCellValueAtIndex(i);
-        GameFlowController.switchPlayer(cell.textContent);
-        GameFlowController.isTieCheck();
         GameFlowController.checkForWinner(cell.textContent);
+        GameFlowController.isTieCheck();
+        GameFlowController.switchPlayer(cell.textContent);
         if (GameFlowController.hasWinner()) {
           winnerAnnouncement.textContent = `Winner is: ${GameFlowController.getPlayerName(cell.textContent)}`;
+          return;
         }
       }
     });
@@ -126,9 +130,7 @@ const DisplayController = (function () {
 })();
 
 //create player object
-function createPlayer(name, mark) {
-  return { name, mark };
-}
+
 
 
 
