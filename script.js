@@ -29,7 +29,7 @@ const GameBoard = (function () {
   }
 
   function isTieCheck() {
-    return gameboard.every(cell => cell !== null);
+  return  GameFlowController.setTieState(gameboard.every(cell => cell !== null));
   }
   
 
@@ -37,6 +37,8 @@ const GameBoard = (function () {
   function checkForWinner(mark) {
     const indices = checkThreeInArow(mark);
     console.log(indices);
+
+    
 
     // all possible winning combinations of Xindices
     const winningCombination = [[0, 1, 2], [0, 3, 6], [3, 4, 5], [6, 7, 8], [1, 4, 7], [2, 5, 8],
@@ -48,16 +50,15 @@ const GameBoard = (function () {
       for (let i = 0; i < winningCombination.length; i++) {
         winState = winningCombination[i].every(element => indices.includes(element))
         if (winState) {
-          GameFlowController.setWinnerState(winState);
           console.log(`${GameFlowController.getPlayerName(mark)} has won`);
-          break;
+          return GameFlowController.setWinnerState(winState);
         } 
       }
     } 
-    if (indices.length >= 3 && !winState && isTieCheck()) {
-      return isTied;
+    if (indices.length >= 3 && !winState && isTied) {
+      console.log('is tied');
     }
-    return GameFlowController.hasWinner();
+    
   }
 
 
@@ -85,6 +86,10 @@ const GameFlowController = (function () {
     if (state) isWinnerFound = true;
   }
 
+  function setTieState(state) {
+    if (state) return isTied = true;
+  }
+
   // get player names for DOM
   function getPlayerName(mark) {
     return (mark === 'X') ? player1.name : player2.name;
@@ -99,7 +104,7 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { getPlayerName, getCurrentPlayerMark, switchPlayer, hasWinner, setWinnerState }
+  return { getPlayerName, getCurrentPlayerMark, switchPlayer, hasWinner, setWinnerState, setTieState }
 })();
 
 
