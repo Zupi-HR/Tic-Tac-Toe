@@ -18,12 +18,10 @@ const GameBoard = (function () {
     return gameboard;
   }
 
-  //place a mark on the board at a specific cell
   function placeMarkAt(cell) {
     gameboard[cell] = GameFlowController.getCurrentPlayerMark();
 
   }
-
 
   return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, getGameBoardArray };
 })();
@@ -35,7 +33,6 @@ const GameFlowController = (function () {
 
   // set current player
   let currentPlayer = player1;
-
   let isWinnerFound = false;
   let isTied = false;
 
@@ -48,33 +45,26 @@ const GameFlowController = (function () {
   }
 
   function isTieCheck() {
-    return GameFlowController.setTieState(GameBoard.getGameBoardArray().every(cell => cell !== null));
+    isTied = GameBoard.getGameBoardArray().every(cell => cell !== null);
   }
 
-
-  // check if there's a winner
   function checkForWinner(mark) {
     const indices = checkThreeInArow(mark);
     console.log(indices);
 
-
-
-    // all possible winning combinations of Xindices
     const winningCombination = [[0, 1, 2], [0, 3, 6], [3, 4, 5], [6, 7, 8], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]];
-    let winState = false;
-    let isTied = isTieCheck();
-    //Check for a winning combination
+
     if (indices.length >= 3) {
       for (let i = 0; i < winningCombination.length; i++) {
-        winState = winningCombination[i].every(element => indices.includes(element))
-        if (winState) {
+        isWinnerFound = winningCombination[i].every(element => indices.includes(element))
+        if (isWinnerFound) {
           console.log(`${GameFlowController.getPlayerName(mark)} has won`);
-          return GameFlowController.setWinnerState(winState);
+          return;
         }
       }
     }
-    if (indices.length >= 3 && !winState && isTied) {
+    if (indices.length >= 3 && !isWinnerFound && isTied) {
       console.log('is tied');
     }
 
@@ -82,14 +72,6 @@ const GameFlowController = (function () {
 
   function hasWinner() {
     return isWinnerFound;
-  }
-
-  function setWinnerState(state) {
-    if (state) isWinnerFound = true;
-  }
-
-  function setTieState(state) {
-    if (state) return isTied = true;
   }
 
   // get player names for DOM
@@ -106,7 +88,7 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { getPlayerName, getCurrentPlayerMark, switchPlayer, hasWinner, setWinnerState, setTieState, checkForWinner }
+  return { getPlayerName, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, isTieCheck }
 })();
 
 
@@ -131,14 +113,13 @@ const DisplayController = (function () {
         GameBoard.placeMarkAt(i);
         cell.textContent = GameBoard.getCellValueAtIndex(i);
         GameFlowController.switchPlayer(cell.textContent);
+        GameFlowController.isTieCheck();
         GameFlowController.checkForWinner(cell.textContent);
         if (GameFlowController.hasWinner()) {
           winnerAnnouncement.textContent = `Winner is: ${GameFlowController.getPlayerName(cell.textContent)}`;
         }
       }
     });
-
-
     GameBoardElement.append(cell);
   }
 
