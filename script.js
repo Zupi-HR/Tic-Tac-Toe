@@ -14,14 +14,33 @@ const GameBoard = (function () {
     return gameboard.length;
   }
 
+  function getGameBoardArray() {
+    return gameboard;
+  }
+
   //place a mark on the board at a specific cell
   function placeMarkAt(cell) {
     gameboard[cell] = GameFlowController.getCurrentPlayerMark();
 
   }
 
+
+  return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, getGameBoardArray };
+})();
+
+const GameFlowController = (function () {
+  //Initialize players
+  const player1 = createPlayer('Župi', 'X');
+  const player2 = createPlayer('Brada', 'O');
+
+  // set current player
+  let currentPlayer = player1;
+
+  let isWinnerFound = false;
+  let isTied = false;
+
   function checkThreeInArow(mark) {
-    return gameboard.map((element, index) => {
+    return GameBoard.getGameBoardArray().map((element, index) => {
       if (element === mark) {
         return index;
       }
@@ -29,16 +48,16 @@ const GameBoard = (function () {
   }
 
   function isTieCheck() {
-  return  GameFlowController.setTieState(gameboard.every(cell => cell !== null));
+    return GameFlowController.setTieState(GameBoard.getGameBoardArray().every(cell => cell !== null));
   }
-  
+
 
   // check if there's a winner
   function checkForWinner(mark) {
     const indices = checkThreeInArow(mark);
     console.log(indices);
 
-    
+
 
     // all possible winning combinations of Xindices
     const winningCombination = [[0, 1, 2], [0, 3, 6], [3, 4, 5], [6, 7, 8], [1, 4, 7], [2, 5, 8],
@@ -52,31 +71,14 @@ const GameBoard = (function () {
         if (winState) {
           console.log(`${GameFlowController.getPlayerName(mark)} has won`);
           return GameFlowController.setWinnerState(winState);
-        } 
+        }
       }
-    } 
+    }
     if (indices.length >= 3 && !winState && isTied) {
       console.log('is tied');
     }
-    
+
   }
-
-
-  return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, checkThreeInArow, checkForWinner, isTieCheck };
-})();
-
-const GameFlowController = (function () {
-  //Initialize players
-  const player1 = createPlayer('Župi', 'X');
-  const player2 = createPlayer('Brada', 'O');
-
-  // set current player
-  let currentPlayer = player1;
-
-  let isWinnerFound = false;
-  let isTied = false;
-  
-
 
   function hasWinner() {
     return isWinnerFound;
@@ -104,7 +106,7 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { getPlayerName, getCurrentPlayerMark, switchPlayer, hasWinner, setWinnerState, setTieState }
+  return { getPlayerName, getCurrentPlayerMark, switchPlayer, hasWinner, setWinnerState, setTieState, checkForWinner }
 })();
 
 
@@ -129,7 +131,7 @@ const DisplayController = (function () {
         GameBoard.placeMarkAt(i);
         cell.textContent = GameBoard.getCellValueAtIndex(i);
         GameFlowController.switchPlayer(cell.textContent);
-        GameBoard.checkForWinner(cell.textContent);
+        GameFlowController.checkForWinner(cell.textContent);
         if (GameFlowController.hasWinner()) {
           winnerAnnouncement.textContent = `Winner is: ${GameFlowController.getPlayerName(cell.textContent)}`;
         }
