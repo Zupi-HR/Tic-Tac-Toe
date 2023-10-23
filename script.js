@@ -28,7 +28,7 @@ const GameBoard = (function () {
 
 const GameFlowController = (function () {
   function createPlayer(name, mark) {
-    return {name, mark}
+    return { name, mark }
   }
 
   //Initialize players
@@ -49,20 +49,17 @@ const GameFlowController = (function () {
   }
 
   function isTieCheck() {
-    const gameboard = GameBoard.getGameBoardArray().every(cell => cell !== null);
-    if(gameboard) {
-      console.log('is tied');
-    }
+    return isTied = GameBoard.getGameBoardArray().every(cell => cell !== null);
+
   }
 
   function checkForWinner(mark) {
     const indices = checkThreeInArow(mark);
     console.log(indices);
-
     const winningCombination = [[0, 1, 2], [0, 3, 6], [3, 4, 5], [6, 7, 8], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]];
 
-    if (indices.length >= 3 && !isTied) {
+    if (indices.length >= 3) {
       for (let i = 0; i < winningCombination.length; i++) {
         isWinnerFound = winningCombination[i].every(element => indices.includes(element))
         if (isWinnerFound) {
@@ -70,11 +67,17 @@ const GameFlowController = (function () {
           return;
         }
       }
+    } if (isTieCheck() && !isWinnerFound) {
+      console.log('it is tied');
     }
   }
 
   function hasWinner() {
     return isWinnerFound;
+  }
+
+  function getTieStatus() {
+    return isTied;
   }
 
   // get player names for DOM
@@ -91,7 +94,7 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { getPlayerName, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, isTieCheck }
+  return { getPlayerName, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, isTieCheck, getTieStatus }
 })();
 
 
@@ -99,7 +102,7 @@ const GameFlowController = (function () {
 const DisplayController = (function () {
   function getElement(element) {
     return document.querySelector(`${element}`);
-   }
+  }
 
   const playerOneNameElement = getElement('.firstPlayer');
   playerOneNameElement.textContent = GameFlowController.getPlayerName('X');
@@ -116,11 +119,12 @@ const DisplayController = (function () {
         GameBoard.placeMarkAt(i);
         cell.textContent = GameBoard.getCellValueAtIndex(i);
         GameFlowController.checkForWinner(cell.textContent);
-        GameFlowController.isTieCheck();
         GameFlowController.switchPlayer(cell.textContent);
         if (GameFlowController.hasWinner()) {
           winnerAnnouncement.textContent = `Winner is: ${GameFlowController.getPlayerName(cell.textContent)}`;
           return;
+        } else if (GameFlowController.getTieStatus()) {
+          winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.'
         }
       }
     });
