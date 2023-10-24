@@ -12,7 +12,7 @@ const GameBoard = (function () {
 
   function getTotalBoardCells() {
     return gameboard.length;
-  }
+  } 
 
   function getGameBoardArray() {
     return gameboard;
