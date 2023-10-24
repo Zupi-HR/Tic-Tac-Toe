@@ -30,9 +30,21 @@ const GameFlowController = (function () {
     return { name, mark }
   }
 
-  //Initialize players
-  const player1 = createPlayer('Župi', 'X');
-  const player2 = createPlayer('Brada', 'O');
+ 
+  let player1;
+  let player2;
+
+  function getPlayerNameFromInput(value) {
+    if (value !== '' && !player1) {
+     player1 = createPlayer(value, 'X');
+     console.log(player1);
+    } else if (value !== '' && !player2) {
+     player2 = createPlayer(value, 'O');
+     console.log(player2);
+    }
+  }
+
+  
 
   // set current player
   let currentPlayer = player1;
@@ -85,6 +97,7 @@ const GameFlowController = (function () {
     return (mark === 'X') ? player1.name : player2.name;
   }
 
+  
   function getCurrentPlayerMark() {
     return currentPlayer.mark;
   }
@@ -94,20 +107,45 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { getPlayerName, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, isTieCheck, getTieStatus }
+  return { getPlayerName, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, isTieCheck, getTieStatus, getPlayerNameFromInput }
 })();
 
 
 
 const DisplayController = (function () {
+  let playerOneNameElement = getElement('.firstPlayer');
+  let playerTwoNameElement = getElement('.secondPlayer');
+
+  const setupPlayerBTN = getElement('#setup_name_BTN');
+  const playerNameForm = getElement('#player_name_form');
+  let playerNameInput = getElement('#player_name_input');
+  const submitForm = getElement('#submitForm')
+  setupPlayerBTN.addEventListener('click', function (event) {
+    playerNameForm.style.display = 'block';
+  });
+  submitForm.addEventListener('click', function (event) {
+    event.preventDefault();
+    let playerName = playerNameInput.value;
+   if (playerName !== '' && playerOneNameElement.textContent == "") {
+    playerOneNameElement.textContent = playerName;
+    GameFlowController.getPlayerNameFromInput(playerName);
+    playerNameInput.value = '';
+    playerName = '';
+   } else if (playerName !== '' && playerTwoNameElement.textContent == "") {
+    playerTwoNameElement.textContent = playerName;
+    GameFlowController.getPlayerNameFromInput(playerName);
+    playerNameInput.value = '';
+    playerName = '';
+   }
+  })
+
   function getElement(element) {
     return document.querySelector(`${element}`);
   }
 
-  const playerOneNameElement = getElement('.firstPlayer');
-  playerOneNameElement.textContent = GameFlowController.getPlayerName('X');
-  const playerTwoNameElement = getElement('.secondPlayer');
-  playerTwoNameElement.textContent = GameFlowController.getPlayerName('O');
+  
+  
+  
 
   const winnerAnnouncement = getElement('.winner-message');
   const GameBoardElement = getElement('.gameboard');

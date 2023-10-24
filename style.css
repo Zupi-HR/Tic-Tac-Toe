@@ -38,3 +38,13 @@ body {
 .activePlayer {
     
 }
+
+.setup_name_BTN {
+    width: 100px;
+    height: 100px;
+    font: 25px;
+}
+
+.player_name_form {
+    display: none;
+}
