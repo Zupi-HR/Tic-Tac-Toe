@@ -20,7 +20,6 @@ const GameBoard = (function () {
 
   function placeMarkAt(cell) {
     gameboard[cell] = GameFlowController.getCurrentPlayerMark();
-
   }
 
   return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, getGameBoardArray };
@@ -64,11 +63,12 @@ const GameFlowController = (function () {
         isWinnerFound = winningCombination[i].every(element => indices.includes(element))
         if (isWinnerFound) {
           console.log(`${GameFlowController.getPlayerName(mark)} has won`);
-          return;
+          return isWinnerFound;
         }
       }
     } if (isTieCheck() && !isWinnerFound) {
       console.log('it is tied');
+      return;
     }
   }
 
@@ -118,13 +118,14 @@ const DisplayController = (function () {
       if (GameBoard.getCellValueAtIndex(i) === null && !GameFlowController.hasWinner()) {
         GameBoard.placeMarkAt(i);
         cell.textContent = GameBoard.getCellValueAtIndex(i);
-        GameFlowController.checkForWinner(cell.textContent);
         GameFlowController.switchPlayer(cell.textContent);
+        GameFlowController.checkForWinner(cell.textContent);
         if (GameFlowController.hasWinner()) {
           winnerAnnouncement.textContent = `Winner is: ${GameFlowController.getPlayerName(cell.textContent)}`;
           return;
         } else if (GameFlowController.getTieStatus()) {
           winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.'
+          return;
         }
       }
     });
