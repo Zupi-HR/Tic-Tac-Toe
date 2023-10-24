@@ -42,6 +42,6 @@ body {
     font: 25px;
 }
 
-.player_name_form {
+#player_name_form {
     display: none;
 }
