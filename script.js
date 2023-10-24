@@ -33,10 +33,12 @@ const GameFlowController = (function () {
  
   let player1;
   let player2;
+  let currentPlayer;
 
   function getPlayerNameFromInput(value) {
     if (value !== '' && !player1) {
      player1 = createPlayer(value, 'X');
+      currentPlayer = player1;
      console.log(player1);
     } else if (value !== '' && !player2) {
      player2 = createPlayer(value, 'O');
@@ -47,7 +49,7 @@ const GameFlowController = (function () {
   
 
   // set current player
-  let currentPlayer = player1;
+  
   let isWinnerFound = false;
   let isTied = false;
 
@@ -131,6 +133,7 @@ const DisplayController = (function () {
     GameFlowController.getPlayerNameFromInput(playerName);
     playerNameInput.value = '';
     playerName = '';
+    
    } else if (playerName !== '' && playerTwoNameElement.textContent == "") {
     playerTwoNameElement.textContent = playerName;
     GameFlowController.getPlayerNameFromInput(playerName);
