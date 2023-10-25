@@ -30,8 +30,8 @@ body {
     display: none;
 }
 
-.gameboard_container {
-    display: flex;
+#gameboard_container {
+    display: none;
     justify-content: center;
     gap: 20px;
 }
@@ -40,6 +40,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 100px);
     grid-template-rows: repeat(3, 100px);
+    border: 5px solid black;
 }
 
 .cell {

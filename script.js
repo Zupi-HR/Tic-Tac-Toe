@@ -14,7 +14,7 @@ const GameBoard = (function () {
     return gameboard.length;
   }
 
-  function getGameBoardArray() {
+  function getBoardState() {
     return gameboard;
   }
 
@@ -22,7 +22,7 @@ const GameBoard = (function () {
     gameboard[cell] = GameFlowController.getCurrentPlayerMark();
   }
 
-  return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, getGameBoardArray };
+  return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, getBoardState };
 })();
 
 const GameFlowController = (function () {
@@ -35,7 +35,7 @@ const GameFlowController = (function () {
   let player2;
   let currentPlayer;
 
-  function setsecondPlayerFromInput(value) {
+  function setPlayerFromInput(value) {
     if (value !== '' && !player1) {
       player1 = createPlayer(value, 'X');
       currentPlayer = player1;
@@ -50,19 +50,19 @@ const GameFlowController = (function () {
 
   // set current player
 
-  let isWinnerFound = false;
-  let isTied = false;
+  let _IsWinnerFound = false;
+  let _IsTied = false;
 
   function checkThreeInArow(mark) {
-    return GameBoard.getGameBoardArray().map((element, index) => {
+    return GameBoard.getBoardState().map((element, index) => {
       if (element === mark) {
         return index;
       }
     }).filter(filteredIndex => filteredIndex !== undefined);
   }
 
-  function isTieCheck() {
-    return isTied = GameBoard.getGameBoardArray().every(cell => cell !== null);
+  function checkForTie() {
+    return _IsTied = GameBoard.getBoardState().every(cell => cell !== null);
 
   }
 
@@ -74,28 +74,28 @@ const GameFlowController = (function () {
 
     if (indices.length >= 3) {
       for (let i = 0; i < winningCombination.length; i++) {
-        isWinnerFound = winningCombination[i].every(element => indices.includes(element))
-        if (isWinnerFound) {
-          console.log(`${GameFlowController.getsecondPlayer(mark)} has won`);
-          return isWinnerFound;
+        _IsWinnerFound = winningCombination[i].every(element => indices.includes(element))
+        if (_IsWinnerFound) {
+          console.log(`${GameFlowController.getPlayerNameByMark(mark)} has won`);
+          return _IsWinnerFound;
         }
       }
-    } if (isTieCheck() && !isWinnerFound) {
+    } if (checkForTie() && !_IsWinnerFound) {
       console.log('it is tied');
       return;
     }
   }
 
   function hasWinner() {
-    return isWinnerFound;
+    return _IsWinnerFound;
   }
 
   function getTieStatus() {
-    return isTied;
+    return _IsTied;
   }
 
   // get player names for DOM
-  function getsecondPlayer(mark) {
+  function getPlayerNameByMark(mark) {
     return (mark === 'X') ? player1.name : player2.name;
   }
 
@@ -109,7 +109,7 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { getsecondPlayer, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, isTieCheck, getTieStatus, setsecondPlayerFromInput }
+  return { getPlayerNameByMark, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, checkForTie, getTieStatus, setPlayerFromInput }
 })();
 
 
@@ -118,8 +118,9 @@ const DisplayController = (function () {
   //get elements
   const startGameBTN = getElement('#start_game_BTN');
   const container = getElement('#container');
-  let playerOneNameElement = getElement('.firstPlayer');
-  let playerTwoNameElement = getElement('.secondPlayer');
+  const gameboardContainer = getElement('#gameboard_container')
+  const playerOneNameElement = getElement('.firstPlayer');
+  const playerTwoNameElement = getElement('.secondPlayer');
   const playerNameForm = getElement('#player_name_form');
   const firstPlayerInput = getElement('#first_player_input');
   const secondPlayerInput = getElement('#second_player_input')
@@ -139,22 +140,17 @@ const DisplayController = (function () {
     let firstPlayer = firstPlayerInput.value;
     let secondPlayer = secondPlayerInput.value;
 
-    GameFlowController.setsecondPlayerFromInput(firstPlayer);
-    GameFlowController.setsecondPlayerFromInput(secondPlayer);
+    GameFlowController.setPlayerFromInput(firstPlayer);
+    GameFlowController.setPlayerFromInput(secondPlayer);
 
     if (firstPlayer !== '' && secondPlayer !== '') {
       playerNameForm.style.display = 'none';
       playerOneNameElement.textContent = firstPlayer;
       playerTwoNameElement.textContent = secondPlayer;
-      playerTwoNameElement.textContent = secondPlayer;
-      GameFlowController.setsecondPlayerFromInput(secondPlayer);
-      secondPlayerInput.value = '';
-      secondPlayer = '';
-      //rendering gameboard
-      const winnerAnnouncement = getElement('.winner-message');
+      //rendering gameboard container and its content
+      gameboardContainer.style.display = 'flex';
       const GameBoardElement = getElement('.gameboard');
-
-
+      const winnerAnnouncement = getElement('.winner-message');
 
       for (let i = 0; i < GameBoard.getTotalBoardCells(); i++) {
         const cell = document.createElement('div');
@@ -166,7 +162,7 @@ const DisplayController = (function () {
             GameFlowController.switchPlayer(cell.textContent);
             GameFlowController.checkForWinner(cell.textContent);
             if (GameFlowController.hasWinner()) {
-              winnerAnnouncement.textContent = `Winner is: ${GameFlowController.getsecondPlayer(cell.textContent)}`;
+              winnerAnnouncement.textContent = `Winner is: ${GameFlowController.getPlayerNameByMark(cell.textContent)}`;
               return;
             } else if (GameFlowController.getTieStatus()) {
               winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.'
