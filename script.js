@@ -104,6 +104,7 @@ const GameFlowController = (function () {
     return currentPlayer.mark;
   }
 
+
   // toggle the player's turn 
   function switchPlayer(mark) {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
@@ -143,6 +144,7 @@ const DisplayController = (function () {
     GameFlowController.setPlayerFromInput(firstPlayerName);
     GameFlowController.setPlayerFromInput(secondPlayerName);
 
+
     if (firstPlayerName !== '' && secondPlayerName !== '') {
       playerNameForm.style.display = 'none';
       playerOneNameElement.textContent = firstPlayerName;
@@ -158,6 +160,13 @@ const DisplayController = (function () {
         cell.addEventListener('click', function () {
           if (GameBoard.getCellValueAtIndex(i) === null && !GameFlowController.hasWinner()) {
             GameBoard.placeMarkAt(i);
+            if (GameFlowController.getCurrentPlayerMark() === 'X') {
+              playerTwoNameElement.classList.remove('activePlayer');
+              addClassToElement(playerOneNameElement, 'activePlayer');
+            } else {
+              playerOneNameElement.classList.remove('activePlayer');
+              addClassToElement(playerTwoNameElement, 'activePlayer');
+            }
             cell.textContent = GameBoard.getCellValueAtIndex(i);
             GameFlowController.switchPlayer(cell.textContent);
             GameFlowController.checkForWinner(cell.textContent);
@@ -178,9 +187,9 @@ const DisplayController = (function () {
   function getElement(element) {
     return document.querySelector(`${element}`);
   }
-  
+
   function addClassToElement(element, className) {
-     element.classList.add(className);
+    element.classList.add(className);
   }
 
 })();

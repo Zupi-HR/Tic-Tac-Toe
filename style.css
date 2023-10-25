@@ -53,6 +53,8 @@ body {
 
 .firstPlayer, .secondPlayer {
     font-size: 25px;
+    height: fit-content;
+    padding: 10px 25px;
 }
 
 .firstPlayer {
@@ -61,6 +63,10 @@ body {
 
 .secondPlayer {
     color: blue;
+}
+
+.activePlayer {
+    background-color: gold;
 }
 
 
