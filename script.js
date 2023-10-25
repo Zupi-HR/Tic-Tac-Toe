@@ -137,16 +137,16 @@ const DisplayController = (function () {
   submitForm.addEventListener('click', function (event) {
     event.preventDefault();
 
-    let firstPlayer = firstPlayerInput.value;
-    let secondPlayer = secondPlayerInput.value;
+    let firstPlayerName = firstPlayerInput.value;
+    let secondPlayerName = secondPlayerInput.value;
 
-    GameFlowController.setPlayerFromInput(firstPlayer);
-    GameFlowController.setPlayerFromInput(secondPlayer);
+    GameFlowController.setPlayerFromInput(firstPlayerName);
+    GameFlowController.setPlayerFromInput(secondPlayerName);
 
-    if (firstPlayer !== '' && secondPlayer !== '') {
+    if (firstPlayerName !== '' && secondPlayerName !== '') {
       playerNameForm.style.display = 'none';
-      playerOneNameElement.textContent = firstPlayer;
-      playerTwoNameElement.textContent = secondPlayer;
+      playerOneNameElement.textContent = firstPlayerName;
+      playerTwoNameElement.textContent = secondPlayerName;
       //rendering gameboard container and its content
       gameboardContainer.style.display = 'flex';
       const GameBoardElement = getElement('.gameboard');
@@ -154,7 +154,7 @@ const DisplayController = (function () {
 
       for (let i = 0; i < GameBoard.getBoardCellCount(); i++) {
         const cell = document.createElement('div');
-        cell.classList.add('cell');
+        addClassToElement(cell, 'cell');
         cell.addEventListener('click', function () {
           if (GameBoard.getCellValueAtIndex(i) === null && !GameFlowController.hasWinner()) {
             GameBoard.placeMarkAt(i);
@@ -178,11 +178,10 @@ const DisplayController = (function () {
   function getElement(element) {
     return document.querySelector(`${element}`);
   }
-
-
-
-
-
+  
+  function addClassToElement(element, className) {
+     element.classList.add(className);
+  }
 
 })();
 
