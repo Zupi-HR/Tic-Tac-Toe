@@ -1,12 +1,36 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
 body {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     gap: 15px;
+    height: 100vh;
 }
 
-.container {
+#start_game_BTN {
+   background-color: rgb(17, 235, 17);
+   color: white;
+   border: none;
+   border-radius: 10px;
+   padding: 15px 25px;
+   font-size: 25px;
+}
+
+#start_game_BTN:hover {
+    background-color: rgb(98, 238, 80);
+    cursor: grab;
+}
+
+#container {
+    display: none;
+}
+
+.gameboard_container {
     display: flex;
     justify-content: center;
     gap: 20px;
@@ -19,6 +43,9 @@ body {
 }
 
 .cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 1px solid black;
     font-size: 50px;
 }
@@ -36,12 +63,24 @@ body {
 }
 
 
-.setup_name_BTN {
-    width: 100px;
-    height: 100px;
-    font: 25px;
-}
-
 #player_name_form {
     display: none;
+    flex-wrap: wrap;
+    gap: 30px;
+    align-items: center;
 }
+
+@media (max-width: 700px) {
+    #player_name_form {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+#submit_form_BTN{
+ font-size: 16px;
+ background-color: aqua;
+ border: none;
+ padding: 10px 20px;
+}
+

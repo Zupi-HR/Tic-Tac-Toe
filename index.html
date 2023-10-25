@@ -10,21 +10,31 @@
 </head>
 
 <body>
-    <button id="setup_name_BTN">Add Players</button>
-    <form action="" id="player_name_form">
-        <label for="player_name_input">Please enter your name: </label>
-        <input type="text" id="player_name_input">
-        <input type="submit" value="Add" id="submitForm">
-    </form>
-    <div class="container">
-        <div class="firstPlayer"></div>
-        <div class="gameboard">
+    <button id="start_game_BTN">Start Game</button>
+    <div id="container">
+        <form action="" id="player_name_form">
+            <label for="first_player_input">Please enter Player 1 name:
+                <input type="text" id="first_player_input">
+            </label>
 
+
+            <label for="second_player_input">Please enter Player 2 name:
+                <input type="text" id="second_player_input">
+            </label>
+
+
+            <input type="submit" value="Add" id="submit_form_BTN">
+        </form>
+        <div class="gameboard_container">
+            <div class="firstPlayer"></div>
+            <div class="gameboard">
+
+            </div>
+            <div class="secondPlayer"></div>
         </div>
-        <div class="secondPlayer"></div>
-    </div>
 
-    <div class="winner-message"></div>
+        <div class="winner-message"></div>
+    </div>
 </body>
 
 </html>

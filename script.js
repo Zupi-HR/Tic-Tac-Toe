@@ -35,7 +35,7 @@ const GameFlowController = (function () {
   let player2;
   let currentPlayer;
 
-  function getPlayerNameFromInput(value) {
+  function setsecondPlayerFromInput(value) {
     if (value !== '' && !player1) {
       player1 = createPlayer(value, 'X');
       currentPlayer = player1;
@@ -76,7 +76,7 @@ const GameFlowController = (function () {
       for (let i = 0; i < winningCombination.length; i++) {
         isWinnerFound = winningCombination[i].every(element => indices.includes(element))
         if (isWinnerFound) {
-          console.log(`${GameFlowController.getPlayerName(mark)} has won`);
+          console.log(`${GameFlowController.getsecondPlayer(mark)} has won`);
           return isWinnerFound;
         }
       }
@@ -95,7 +95,7 @@ const GameFlowController = (function () {
   }
 
   // get player names for DOM
-  function getPlayerName(mark) {
+  function getsecondPlayer(mark) {
     return (mark === 'X') ? player1.name : player2.name;
   }
 
@@ -109,35 +109,50 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { getPlayerName, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, isTieCheck, getTieStatus, getPlayerNameFromInput }
+  return { getsecondPlayer, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, isTieCheck, getTieStatus, setsecondPlayerFromInput }
 })();
 
 
 
 const DisplayController = (function () {
+  //get elements
+  const startGameBTN = getElement('#start_game_BTN');
+  const container = getElement('#container');
   let playerOneNameElement = getElement('.firstPlayer');
   let playerTwoNameElement = getElement('.secondPlayer');
-  const setupPlayerBTN = getElement('#setup_name_BTN');
-  const playerNameForm = getElement('#player_name_form');
-  let playerNameInput = getElement('#player_name_input');
-  const submitForm = getElement('#submitForm')
-  setupPlayerBTN.addEventListener('click', function (event) {
-    playerNameForm.style.display = 'block';
-  });
+  const secondPlayerForm = getElement('#player_name_form');
+  const firstPlayerInput = getElement('#first_player_input');
+  const secondPlayerInput = getElement('#second_player_input')
+  const submitForm = getElement('#submit_form_BTN')
+
+  //event listeners
+   startGameBTN.addEventListener('click', function() {
+    container.style.display = 'block';
+    startGameBTN.style.display = 'none';
+    secondPlayerForm.style.display = 'flex';
+   })
+
+ 
   submitForm.addEventListener('click', function (event) {
     event.preventDefault();
-    let playerName = playerNameInput.value;
-    if (playerName !== '' && playerOneNameElement.textContent == "") {
-      playerOneNameElement.textContent = playerName;
-      GameFlowController.getPlayerNameFromInput(playerName);
-      playerNameInput.value = '';
-      playerName = '';
 
-    } else if (playerName !== '' && playerTwoNameElement.textContent == "") {
-      playerTwoNameElement.textContent = playerName;
-      GameFlowController.getPlayerNameFromInput(playerName);
-      playerNameInput.value = '';
-      playerName = '';
+    let firstPlayer = firstPlayerInput.value;
+    let secondPlayer = secondPlayerInput.value;
+    
+    GameFlowController.setsecondPlayerFromInput(firstPlayer);
+    GameFlowController.setsecondPlayerFromInput(secondPlayer);
+
+    if (firstPlayer !== '' && playerOneNameElement.textContent == "") {
+      playerOneNameElement.textContent = firstPlayer;
+      GameFlowController.setsecondPlayerFromInput(secondPlayer);
+      secondPlayerInput.value = '';
+      secondPlayer = '';
+
+    } else if (secondPlayer !== '' && playerTwoNameElement.textContent == "") {
+      playerTwoNameElement.textContent = secondPlayer;
+      GameFlowController.setsecondPlayerFromInput(secondPlayer);
+      secondPlayerInput.value = '';
+      secondPlayer = '';
       //rendering gameboard
       const winnerAnnouncement = getElement('.winner-message');
       const GameBoardElement = getElement('.gameboard');
@@ -154,7 +169,7 @@ const DisplayController = (function () {
             GameFlowController.switchPlayer(cell.textContent);
             GameFlowController.checkForWinner(cell.textContent);
             if (GameFlowController.hasWinner()) {
-              winnerAnnouncement.textContent = `Winner is: ${GameFlowController.getPlayerName(cell.textContent)}`;
+              winnerAnnouncement.textContent = `Winner is: ${GameFlowController.getsecondPlayer(cell.textContent)}`;
               return;
             } else if (GameFlowController.getTieStatus()) {
               winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.'
