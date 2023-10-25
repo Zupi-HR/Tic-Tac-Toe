@@ -70,7 +70,7 @@ body {
     align-items: center;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 798px) {
     #player_name_form {
         flex-direction: column;
         gap: 20px;

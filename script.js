@@ -12,7 +12,7 @@ const GameBoard = (function () {
 
   function getTotalBoardCells() {
     return gameboard.length;
-  } 
+  }
 
   function getGameBoardArray() {
     return gameboard;
@@ -120,35 +120,32 @@ const DisplayController = (function () {
   const container = getElement('#container');
   let playerOneNameElement = getElement('.firstPlayer');
   let playerTwoNameElement = getElement('.secondPlayer');
-  const secondPlayerForm = getElement('#player_name_form');
+  const playerNameForm = getElement('#player_name_form');
   const firstPlayerInput = getElement('#first_player_input');
   const secondPlayerInput = getElement('#second_player_input')
   const submitForm = getElement('#submit_form_BTN')
 
   //event listeners
-   startGameBTN.addEventListener('click', function() {
+  startGameBTN.addEventListener('click', function () {
     container.style.display = 'block';
     startGameBTN.style.display = 'none';
-    secondPlayerForm.style.display = 'flex';
-   })
+    playerNameForm.style.display = 'flex';
+  })
 
- 
+
   submitForm.addEventListener('click', function (event) {
     event.preventDefault();
 
     let firstPlayer = firstPlayerInput.value;
     let secondPlayer = secondPlayerInput.value;
-    
+
     GameFlowController.setsecondPlayerFromInput(firstPlayer);
     GameFlowController.setsecondPlayerFromInput(secondPlayer);
 
-    if (firstPlayer !== '' && playerOneNameElement.textContent == "") {
+    if (firstPlayer !== '' && secondPlayer !== '') {
+      playerNameForm.style.display = 'none';
       playerOneNameElement.textContent = firstPlayer;
-      GameFlowController.setsecondPlayerFromInput(secondPlayer);
-      secondPlayerInput.value = '';
-      secondPlayer = '';
-
-    } else if (secondPlayer !== '' && playerTwoNameElement.textContent == "") {
+      playerTwoNameElement.textContent = secondPlayer;
       playerTwoNameElement.textContent = secondPlayer;
       GameFlowController.setsecondPlayerFromInput(secondPlayer);
       secondPlayerInput.value = '';
