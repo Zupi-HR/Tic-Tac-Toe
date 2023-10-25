@@ -10,7 +10,7 @@ const GameBoard = (function () {
     return gameboard[index];
   }
 
-  function getTotalBoardCells() {
+  function getBoardCellCount() {
     return gameboard.length;
   }
 
@@ -22,7 +22,7 @@ const GameBoard = (function () {
     gameboard[cell] = GameFlowController.getCurrentPlayerMark();
   }
 
-  return { getCellValueAtIndex, getTotalBoardCells, placeMarkAt, getBoardState };
+  return { getCellValueAtIndex, getBoardCellCount, placeMarkAt, getBoardState };
 })();
 
 const GameFlowController = (function () {
@@ -50,8 +50,8 @@ const GameFlowController = (function () {
 
   // set current player
 
-  let _IsWinnerFound = false;
-  let _IsTied = false;
+  let _isWinnerFound = false;
+  let _isTied = false;
 
   function checkThreeInArow(mark) {
     return GameBoard.getBoardState().map((element, index) => {
@@ -62,7 +62,7 @@ const GameFlowController = (function () {
   }
 
   function checkForTie() {
-    return _IsTied = GameBoard.getBoardState().every(cell => cell !== null);
+    return _isTied = GameBoard.getBoardState().every(cell => cell !== null);
 
   }
 
@@ -74,24 +74,24 @@ const GameFlowController = (function () {
 
     if (indices.length >= 3) {
       for (let i = 0; i < winningCombination.length; i++) {
-        _IsWinnerFound = winningCombination[i].every(element => indices.includes(element))
-        if (_IsWinnerFound) {
+        _isWinnerFound = winningCombination[i].every(element => indices.includes(element))
+        if (_isWinnerFound) {
           console.log(`${GameFlowController.getPlayerNameByMark(mark)} has won`);
-          return _IsWinnerFound;
+          return _isWinnerFound;
         }
       }
-    } if (checkForTie() && !_IsWinnerFound) {
+    } if (checkForTie() && !_isWinnerFound) {
       console.log('it is tied');
       return;
     }
   }
 
   function hasWinner() {
-    return _IsWinnerFound;
+    return _isWinnerFound;
   }
 
   function getTieStatus() {
-    return _IsTied;
+    return _isTied;
   }
 
   // get player names for DOM
@@ -152,7 +152,7 @@ const DisplayController = (function () {
       const GameBoardElement = getElement('.gameboard');
       const winnerAnnouncement = getElement('.winner-message');
 
-      for (let i = 0; i < GameBoard.getTotalBoardCells(); i++) {
+      for (let i = 0; i < GameBoard.getBoardCellCount(); i++) {
         const cell = document.createElement('div');
         cell.classList.add('cell');
         cell.addEventListener('click', function () {
@@ -186,7 +186,6 @@ const DisplayController = (function () {
 
 })();
 
-//create player object
 
 
 
