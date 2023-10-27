@@ -91,3 +91,12 @@ body {
  padding: 10px 20px;
 }
 
+#winner-message {
+    font-size: 25px;
+}
+
+#winner-message-name {
+    color: rgb(27, 194, 27);
+    font-size: 40px;
+}
+

@@ -152,7 +152,7 @@ const DisplayController = (function () {
       //rendering gameboard container and its content
       gameboardContainer.style.display = 'flex';
       const GameBoardElement = getElement('.gameboard');
-      const winnerAnnouncement = getElement('.winner-message');
+      const winnerAnnouncement = getElement('#winner-message');
 
       for (let i = 0; i < GameBoard.getBoardCellCount(); i++) {
         const cell = document.createElement('div');
@@ -171,10 +171,13 @@ const DisplayController = (function () {
             GameFlowController.switchPlayer(cell.textContent);
             GameFlowController.checkForWinner(cell.textContent);
             if (GameFlowController.hasWinner()) {
-              winnerAnnouncement.textContent = `Winner is: ${GameFlowController.getPlayerNameByMark(cell.textContent)}`;
+              winnerAnnouncement.innerHTML = `Winner is: <span id='winner-message-name'>${GameFlowController.getPlayerNameByMark(cell.textContent)}</span>`;
+              (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
               return;
             } else if (GameFlowController.getTieStatus()) {
-              winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.'
+              winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.';
+              winnerAnnouncement.style.color = '#af1bc2';
+              (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
               return;
             }
           }
@@ -192,6 +195,9 @@ const DisplayController = (function () {
     element.classList.add(className);
   }
 
+  function removeClassFromElement(element, className) {
+    element.classList.remove(className);
+  }
 })();
 
 
