@@ -100,3 +100,16 @@ body {
     font-size: 40px;
 }
 
+#play-again_BTN {
+    display: none;
+    font-size: 30px;
+    background-color: chocolate;
+    color: rgb(39, 36, 218);
+    border: none;
+    padding: 15px 25px;
+}
+
+#play-again_BTN:hover {
+    cursor: grab;
+}
+

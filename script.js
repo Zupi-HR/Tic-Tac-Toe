@@ -126,6 +126,7 @@ const DisplayController = (function () {
   const firstPlayerInput = getElement('#first_player_input');
   const secondPlayerInput = getElement('#second_player_input')
   const submitForm = getElement('#submit_form_BTN')
+  const playAgainBTN = getElement('#play-again_BTN');
 
   //event listeners
   startGameBTN.addEventListener('click', function () {
@@ -171,10 +172,12 @@ const DisplayController = (function () {
             GameFlowController.switchPlayer(cell.textContent);
             GameFlowController.checkForWinner(cell.textContent);
             if (GameFlowController.hasWinner()) {
+              playAgainBTN.style.display = 'block';
               winnerAnnouncement.innerHTML = `Winner is: <span id='winner-message-name'>${GameFlowController.getPlayerNameByMark(cell.textContent)}</span>`;
               (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
               return;
             } else if (GameFlowController.getTieStatus()) {
+              playAgainBTN.style.display = 'block';
               winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.';
               winnerAnnouncement.style.color = '#af1bc2';
               (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
