@@ -1,10 +1,15 @@
 const GameBoard = (function () {
   // Initialize an empty game board
-  const gameboard = [
+  let gameboard = [
     null, null, null,
     null, null, null,
     null, null, null
   ];
+
+  function resetBoard() {
+   gameboard = gameboard.map(cell => cell = null);
+   console.log(gameboard);
+  }
 
   function getCellValueAtIndex(index) {
     return gameboard[index];
@@ -22,7 +27,7 @@ const GameBoard = (function () {
     gameboard[cell] = GameFlowController.getCurrentPlayerMark();
   }
 
-  return { getCellValueAtIndex, getBoardCellCount, placeMarkAt, getBoardState };
+  return { resetBoard, getCellValueAtIndex, getBoardCellCount, placeMarkAt, getBoardState };
 })();
 
 const GameFlowController = (function () {
@@ -52,6 +57,11 @@ const GameFlowController = (function () {
 
   let _isWinnerFound = false;
   let _isTied = false;
+
+  function resetGameState() {
+    _isWinnerFound = false;
+    _isTied = false;
+  }
 
   function checkThreeInArow(mark) {
     return GameBoard.getBoardState().map((element, index) => {
@@ -110,7 +120,7 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { getPlayerNameByMark, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, checkForTie, getTieStatus, setPlayerFromInput }
+  return {resetGameState, getPlayerNameByMark, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, checkForTie, getTieStatus, setPlayerFromInput }
 })();
 
 
@@ -129,6 +139,7 @@ const DisplayController = (function () {
   const playAgainBTN = getElement('#play-again_BTN');
 
   //event listeners
+
   startGameBTN.addEventListener('click', function () {
     container.style.display = 'block';
     startGameBTN.style.display = 'none';
@@ -188,6 +199,11 @@ const DisplayController = (function () {
         GameBoardElement.append(cell);
       }
     }
+  })
+
+  playAgainBTN.addEventListener('click', function() {
+     GameBoard.resetBoard();
+    GameFlowController.resetGameState();
   })
 
   function getElement(element) {
