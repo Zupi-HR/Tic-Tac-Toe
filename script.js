@@ -7,8 +7,8 @@ const GameBoard = (function () {
   ];
 
   function resetBoard() {
-   gameboard = gameboard.map(cell => cell = null);
-   console.log(gameboard);
+    gameboard = gameboard.map(cell => cell = null);
+    console.log(gameboard);
   }
 
   function getCellValueAtIndex(index) {
@@ -120,13 +120,15 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return {resetGameState, getPlayerNameByMark, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, checkForTie, getTieStatus, setPlayerFromInput }
+  return { resetGameState, getPlayerNameByMark, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, checkForTie, getTieStatus, setPlayerFromInput }
 })();
 
 
 
 const DisplayController = (function () {
   //get elements
+  const GameBoardElement = getElement('.gameboard');
+  const winnerAnnouncement = getElement('#winner-message');
   const startGameBTN = getElement('#start_game_BTN');
   const container = getElement('#container');
   const gameboardContainer = getElement('#gameboard_container')
@@ -138,8 +140,63 @@ const DisplayController = (function () {
   const submitForm = getElement('#submit_form_BTN')
   const playAgainBTN = getElement('#play-again_BTN');
 
-  //event listeners
 
+  // functions 
+  function createAndSetupBoardCells() {
+    for (let i = 0; i < GameBoard.getBoardCellCount(); i++) {
+      const cell = document.createElement('div');
+      cell.textContent = '';
+      addClassToElement(cell, 'cell');
+      cell.addEventListener('click', function () {
+        if (GameBoard.getCellValueAtIndex(i) === null && !GameFlowController.hasWinner()) {
+          GameBoard.placeMarkAt(i);
+          if (GameFlowController.getCurrentPlayerMark() === 'X') {
+            playerTwoNameElement.classList.remove('activePlayer');
+            addClassToElement(playerOneNameElement, 'activePlayer');
+          } else {
+            playerOneNameElement.classList.remove('activePlayer');
+            addClassToElement(playerTwoNameElement, 'activePlayer');
+          }
+          cell.textContent = GameBoard.getCellValueAtIndex(i);
+          GameFlowController.switchPlayer(cell.textContent);
+          GameFlowController.checkForWinner(cell.textContent);
+          if (GameFlowController.hasWinner()) {
+            playAgainBTN.style.display = 'block';
+            winnerAnnouncement.innerHTML = `Winner is: <span id='winner-message-name'>${GameFlowController.getPlayerNameByMark(cell.textContent)}</span>`;
+            (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
+            return;
+          } else if (GameFlowController.getTieStatus()) {
+            playAgainBTN.style.display = 'block';
+            winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.';
+            winnerAnnouncement.style.color = '#af1bc2';
+            (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
+            return;
+          }
+        }
+      });
+      GameBoardElement.append(cell);
+    }
+  }
+  /*
+   function deleteGameBoardCells() {
+    for(let i = 0; i < GameBoard.getBoardCellCount(); i++) {
+      GameBoardElement.parentNode.
+    }
+   }
+*/
+  function getElement(element) {
+    return document.querySelector(`${element}`);
+  }
+
+  function addClassToElement(element, className) {
+    element.classList.add(className);
+  }
+
+  function removeClassFromElement(element, className) {
+    element.classList.remove(className);
+  }
+
+  //event listeners
   startGameBTN.addEventListener('click', function () {
     container.style.display = 'block';
     startGameBTN.style.display = 'none';
@@ -163,62 +220,24 @@ const DisplayController = (function () {
       playerTwoNameElement.textContent = secondPlayerName;
       //rendering gameboard container and its content
       gameboardContainer.style.display = 'flex';
-      const GameBoardElement = getElement('.gameboard');
-      const winnerAnnouncement = getElement('#winner-message');
+      createAndSetupBoardCells();
 
-      for (let i = 0; i < GameBoard.getBoardCellCount(); i++) {
-        const cell = document.createElement('div');
-        addClassToElement(cell, 'cell');
-        cell.addEventListener('click', function () {
-          if (GameBoard.getCellValueAtIndex(i) === null && !GameFlowController.hasWinner()) {
-            GameBoard.placeMarkAt(i);
-            if (GameFlowController.getCurrentPlayerMark() === 'X') {
-              playerTwoNameElement.classList.remove('activePlayer');
-              addClassToElement(playerOneNameElement, 'activePlayer');
-            } else {
-              playerOneNameElement.classList.remove('activePlayer');
-              addClassToElement(playerTwoNameElement, 'activePlayer');
-            }
-            cell.textContent = GameBoard.getCellValueAtIndex(i);
-            GameFlowController.switchPlayer(cell.textContent);
-            GameFlowController.checkForWinner(cell.textContent);
-            if (GameFlowController.hasWinner()) {
-              playAgainBTN.style.display = 'block';
-              winnerAnnouncement.innerHTML = `Winner is: <span id='winner-message-name'>${GameFlowController.getPlayerNameByMark(cell.textContent)}</span>`;
-              (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
-              return;
-            } else if (GameFlowController.getTieStatus()) {
-              playAgainBTN.style.display = 'block';
-              winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.';
-              winnerAnnouncement.style.color = '#af1bc2';
-              (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
-              return;
-            }
-          }
-        });
-        GameBoardElement.append(cell);
-      }
     }
   })
 
-  playAgainBTN.addEventListener('click', function() {
-     GameBoard.resetBoard();
+  playAgainBTN.addEventListener('click', function () {
+    GameBoard.resetBoard();
     GameFlowController.resetGameState();
+    console.log(GameBoardElement.children);
+    while (GameBoardElement.firstElementChild) {
+      GameBoardElement.removeChild(GameBoardElement.firstElementChild);
+    }
+    winnerAnnouncement.textContent = '';
+    createAndSetupBoardCells();
   })
 
-  function getElement(element) {
-    return document.querySelector(`${element}`);
-  }
 
-  function addClassToElement(element, className) {
-    element.classList.add(className);
-  }
-
-  function removeClassFromElement(element, className) {
-    element.classList.remove(className);
-  }
 })();
-
 
 
 
