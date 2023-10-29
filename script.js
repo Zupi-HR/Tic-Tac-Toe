@@ -142,6 +142,7 @@ const DisplayController = (function () {
   function createAndSetupBoardCells() {
     for (let i = 0; i < GameBoard.getBoardCellCount(); i++) {
       const cell = document.createElement('div');
+      cell.setAttribute('number', i);
       cell.textContent = '';
       addClassToElement(cell, 'cell');
       cell.addEventListener('click', function () {
@@ -157,10 +158,12 @@ const DisplayController = (function () {
           cell.textContent = GameBoard.getCellValueAtIndex(i);
           GameFlowController.switchPlayer(cell.textContent);
           const winningCells = GameFlowController.checkForWinner(cell.textContent);
+          console.log(winningCells);
           if (GameFlowController.hasWinner()) {
             playAgainBTN.style.display = 'block';
             winnerAnnouncement.innerHTML = `Winner is: <span id='winner-message-name'>${GameFlowController.getPlayerNameByMark(cell.textContent)}</span>`;
             (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
+            colorWinningCells(winningCells);
             return;
           } else if (GameFlowController.getTieStatus()) {
             playAgainBTN.style.display = 'block';
@@ -173,6 +176,27 @@ const DisplayController = (function () {
       });
       GameBoardElement.append(cell);
     }
+  }
+  function colorWinningCells(winningCells) {
+    if (winningCells.length !== 0) {
+      const gameboardCells = document.querySelectorAll('.cell');
+      console.log(gameboardCells, 'svi cellovi');
+      console.log(winningCells, 'pobjednički');
+     
+
+      for (let i = 0; i < winningCells.length; i++) {
+        for (let j = 0; j < gameboardCells.length; j++) {
+         if(gameboardCells[j].getAttribute('number') == winningCells[i]) {
+             gameboardCells[j].classList.add('winningCell');
+         }
+          
+        }
+        
+      }
+    } else {
+      return;
+    }
+
   }
 
 
