@@ -19,15 +19,15 @@ const GameBoard = (function () {
     return gameboard.length;
   }
 
-  function getBoardState() {
+  function getCurrentBoard() {
     return gameboard;
   }
 
-  function placeMarkAt(cell) {
+  function placePlayerMarkAt(cell) {
     gameboard[cell] = GameFlowController.getCurrentPlayerMark();
   }
 
-  return { resetBoard, getCellValueAtIndex, getBoardCellCount, placeMarkAt, getBoardState };
+  return { resetBoard, getCellValueAtIndex, getBoardCellCount, placePlayerMarkAt, getCurrentBoard };
 })();
 
 const GameFlowController = (function () {
@@ -40,7 +40,7 @@ const GameFlowController = (function () {
   let player2;
   let currentPlayer;
 
-  function setPlayerFromInput(value) {
+  function initializePlayerFromInput(value) {
     if (value !== '' && !player1) {
       player1 = createPlayer(value, 'X');
       currentPlayer = player1;
@@ -51,17 +51,17 @@ const GameFlowController = (function () {
     }
   }
   // set current player
-  let _isWinnerFound = false;
-  let _isTied = false;
+  let _isWinnerDeclared = false;
+  let _isGameTied = false;
 
   function resetGameState() {
-    _isWinnerFound = false;
-    _isTied = false;
+    _isWinnerDeclared = false;
+    _isGameTied = false;
     currentPlayer = player1;
   }
 
-  function checkThreeInArow(mark) {
-    return GameBoard.getBoardState().map((element, index) => {
+  function findIndicesOfMark(mark) {
+    return GameBoard.getCurrentBoard().map((element, index) => {
       if (element === mark) {
         return index;
       }
@@ -69,36 +69,37 @@ const GameFlowController = (function () {
   }
 
   function checkForTie() {
-    return _isTied = GameBoard.getBoardState().every(cell => cell !== null);
+    return _isGameTied = GameBoard.getCurrentBoard().every(cell => cell !== null);
 
   }
 
   function checkForWinner(mark) {
-    const indices = checkThreeInArow(mark);
+    const indices = findIndicesOfMark(mark);
     console.log(indices);
     const winningCombination = [[0, 1, 2], [0, 3, 6], [3, 4, 5], [6, 7, 8], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]];
 
     if (indices.length >= 3) {
       for (let i = 0; i < winningCombination.length; i++) {
-        _isWinnerFound = winningCombination[i].every(element => indices.includes(element));
-        if (_isWinnerFound) {
+        let foundWinner = winningCombination[i].every(element => indices.includes(element));
+        if (foundWinner) {
+          _isWinnerDeclared = true;
           console.log(`${GameFlowController.getPlayerNameByMark(mark)} has won`);
           return winningCombination[i];
         }
       }
-    } if (checkForTie() && !_isWinnerFound) {
+    } if (checkForTie() && !_isWinnerDeclared) {
       console.log('it is tied');
       return;
     }
   }
 
   function hasWinner() {
-    return _isWinnerFound;
+    return _isWinnerDeclared;
   }
 
   function getTieStatus() {
-    return _isTied;
+    return _isGameTied;
   }
 
   // get player names for DOM
@@ -117,7 +118,7 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { resetGameState, getPlayerNameByMark, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, checkForTie, getTieStatus, setPlayerFromInput }
+  return { resetGameState, getPlayerNameByMark, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, checkForTie, getTieStatus, initializePlayerFromInput }
 })();
 
 
@@ -126,8 +127,8 @@ const DisplayController = (function () {
   //get elements
   const GameBoardElement = getElement('.gameboard');
   const winnerAnnouncement = getElement('#winner-message');
-  const startGameBTN = getElement('#start_game_BTN');
-  const container = getElement('#container');
+  const startGameButton = getElement('#start_game_BTN');
+  const mainContainer = getElement('#container');
   const gameboardContainer = getElement('#gameboard_container')
   const playerOneNameElement = getElement('.firstPlayer');
   const playerTwoNameElement = getElement('.secondPlayer');
@@ -135,7 +136,7 @@ const DisplayController = (function () {
   const firstPlayerInput = getElement('#first_player_input');
   const secondPlayerInput = getElement('#second_player_input')
   const submitForm = getElement('#submit_form_BTN')
-  const playAgainBTN = getElement('#play-again_BTN');
+  const playAgainButton = getElement('#play-again_BTN');
 
 
   // functions 
@@ -147,7 +148,7 @@ const DisplayController = (function () {
       addClassToElement(cell, 'cell');
       cell.addEventListener('click', function () {
         if (GameBoard.getCellValueAtIndex(i) === null && !GameFlowController.hasWinner()) {
-          GameBoard.placeMarkAt(i);
+          GameBoard.placePlayerMarkAt(i);
           if (GameFlowController.getCurrentPlayerMark() === 'X') {
             playerTwoNameElement.classList.remove('activePlayer');
             addClassToElement(playerOneNameElement, 'activePlayer');
@@ -160,13 +161,13 @@ const DisplayController = (function () {
           const winningCells = GameFlowController.checkForWinner(cell.textContent);
           console.log(winningCells);
           if (GameFlowController.hasWinner()) {
-            playAgainBTN.style.display = 'block';
+            playAgainButton.style.display = 'block';
             winnerAnnouncement.innerHTML = `Winner is: <span id='winner-message-name'>${GameFlowController.getPlayerNameByMark(cell.textContent)}</span>`;
             (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
             colorWinningCells(winningCells);
             return;
           } else if (GameFlowController.getTieStatus()) {
-            playAgainBTN.style.display = 'block';
+            playAgainButton.style.display = 'block';
             winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.';
             winnerAnnouncement.style.color = '#af1bc2';
             (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
@@ -209,9 +210,9 @@ const DisplayController = (function () {
   }
 
   //event listeners
-  startGameBTN.addEventListener('click', function () {
-    container.style.display = 'block';
-    startGameBTN.style.display = 'none';
+  startGameButton.addEventListener('click', function () {
+    mainContainer.style.display = 'block';
+    startGameButton.style.display = 'none';
     playerNameForm.style.display = 'flex';
   })
 
@@ -222,8 +223,8 @@ const DisplayController = (function () {
     let firstPlayerName = firstPlayerInput.value;
     let secondPlayerName = secondPlayerInput.value;
 
-    GameFlowController.setPlayerFromInput(firstPlayerName);
-    GameFlowController.setPlayerFromInput(secondPlayerName);
+    GameFlowController.initializePlayerFromInput(firstPlayerName);
+    GameFlowController.initializePlayerFromInput(secondPlayerName);
 
 
     if (firstPlayerName !== '' && secondPlayerName !== '') {
@@ -237,7 +238,7 @@ const DisplayController = (function () {
     }
   })
 
-  playAgainBTN.addEventListener('click', function () {
+  playAgainButton.addEventListener('click', function () {
     GameBoard.resetBoard();
     GameFlowController.resetGameState();
     console.log(GameBoardElement.children);
