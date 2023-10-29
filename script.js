@@ -50,17 +50,14 @@ const GameFlowController = (function () {
       console.log(player2);
     }
   }
-
-
-
   // set current player
-
   let _isWinnerFound = false;
   let _isTied = false;
 
   function resetGameState() {
     _isWinnerFound = false;
     _isTied = false;
+    currentPlayer = player1;
   }
 
   function checkThreeInArow(mark) {
@@ -87,7 +84,7 @@ const GameFlowController = (function () {
         _isWinnerFound = winningCombination[i].every(element => indices.includes(element))
         if (_isWinnerFound) {
           console.log(`${GameFlowController.getPlayerNameByMark(mark)} has won`);
-          return _isWinnerFound;
+          return indices;
         }
       }
     } if (checkForTie() && !_isWinnerFound) {
@@ -159,7 +156,7 @@ const DisplayController = (function () {
           }
           cell.textContent = GameBoard.getCellValueAtIndex(i);
           GameFlowController.switchPlayer(cell.textContent);
-          GameFlowController.checkForWinner(cell.textContent);
+          const winningCells = GameFlowController.checkForWinner(cell.textContent);
           if (GameFlowController.hasWinner()) {
             playAgainBTN.style.display = 'block';
             winnerAnnouncement.innerHTML = `Winner is: <span id='winner-message-name'>${GameFlowController.getPlayerNameByMark(cell.textContent)}</span>`;
@@ -177,13 +174,8 @@ const DisplayController = (function () {
       GameBoardElement.append(cell);
     }
   }
-  /*
-   function deleteGameBoardCells() {
-    for(let i = 0; i < GameBoard.getBoardCellCount(); i++) {
-      GameBoardElement.parentNode.
-    }
-   }
-*/
+
+
   function getElement(element) {
     return document.querySelector(`${element}`);
   }
