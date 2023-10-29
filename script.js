@@ -81,10 +81,10 @@ const GameFlowController = (function () {
 
     if (indices.length >= 3) {
       for (let i = 0; i < winningCombination.length; i++) {
-        _isWinnerFound = winningCombination[i].every(element => indices.includes(element))
+        _isWinnerFound = winningCombination[i].every(element => indices.includes(element));
         if (_isWinnerFound) {
           console.log(`${GameFlowController.getPlayerNameByMark(mark)} has won`);
-          return indices;
+          return winningCombination[i];
         }
       }
     } if (checkForTie() && !_isWinnerFound) {
@@ -182,16 +182,12 @@ const DisplayController = (function () {
       const gameboardCells = document.querySelectorAll('.cell');
       console.log(gameboardCells, 'svi cellovi');
       console.log(winningCells, 'pobjednički');
-     
-
       for (let i = 0; i < winningCells.length; i++) {
         for (let j = 0; j < gameboardCells.length; j++) {
-         if(gameboardCells[j].getAttribute('number') == winningCells[i]) {
-             gameboardCells[j].classList.add('winningCell');
-         }
-          
+          if (gameboardCells[j].getAttribute('number') == winningCells[i]) {
+            gameboardCells[j].classList.add('winningCell');
+          }
         }
-        
       }
     } else {
       return;
