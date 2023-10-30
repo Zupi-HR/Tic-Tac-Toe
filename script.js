@@ -138,6 +138,17 @@ const DisplayController = (function () {
 
 
   // functions 
+  function toggleActivePlayerClass(currentPlayer, playerOneElement, playerTwoElement) {
+    if (currentPlayer === 'X') {
+      playerTwoElement.classList.remove('activePlayer');
+      addClassToElement(playerOneElement, 'activePlayer');
+    } else {
+      playerOneElement.classList.remove('activePlayer');
+      addClassToElement(playerTwoElement, 'activePlayer');
+    }
+  }
+
+
   function createAndSetupBoardCells() {
     for (let i = 0; i < GameBoard.getBoardCellCount(); i++) {
       const cell = document.createElement('div');
@@ -147,13 +158,7 @@ const DisplayController = (function () {
       cell.addEventListener('click', function () {
         if (GameBoard.getCellValueAtIndex(i) === null && !GameFlowController.hasWinner()) {
           GameBoard.placePlayerMarkAt(i);
-          if (GameFlowController.getCurrentPlayerMark() === 'X') {
-            playerTwoNameElement.classList.remove('activePlayer');
-            addClassToElement(playerOneNameElement, 'activePlayer');
-          } else {
-            playerOneNameElement.classList.remove('activePlayer');
-            addClassToElement(playerTwoNameElement, 'activePlayer');
-          }
+          toggleActivePlayerClass(GameFlowController.getCurrentPlayerMark(), playerOneNameElement, playerTwoNameElement);
           cell.textContent = GameBoard.getCellValueAtIndex(i);
           GameFlowController.switchPlayer(cell.textContent);
           const winningCells = GameFlowController.checkForWinner(cell.textContent);
