@@ -51,12 +51,12 @@ const GameFlowController = (function () {
     }
   }
   // set current player
-  let _isWinnerDeclared = false;
-  let _isGameTied = false;
+  let isWinnerDeclared = false;
+  let isGameTied = false;
 
   function resetGameState() {
-    _isWinnerDeclared = false;
-    _isGameTied = false;
+    isWinnerDeclared = false;
+    isGameTied = false;
     currentPlayer = player1;
   }
 
@@ -69,7 +69,11 @@ const GameFlowController = (function () {
   }
 
   function checkForTie() {
-    return GameBoard.getCurrentBoard().every(cell => cell !== null);
+    const boardIsFull = GameBoard.getCurrentBoard().every(cell => cell !== null);
+    if (boardIsFull && !isWinnerDeclared) {
+      console.log('it is tied');
+      return isGameTied = true;
+    }
 
   }
 
@@ -83,24 +87,18 @@ const GameFlowController = (function () {
       for (let i = 0; i < winningCombination.length; i++) {
         let foundWinner = winningCombination[i].every(element => indices.includes(element));
         if (foundWinner) {
-          _isWinnerDeclared = true;
+          isWinnerDeclared = true;
           console.log(`${GameFlowController.getPlayerNameByMark(mark)} has won`);
           return winningCombination[i];
         }
       }
-    } if (checkForTie() && !_isWinnerDeclared) {
-      console.log('it is tied');
-      return _isGameTied = true;
     }
   }
 
   function hasWinner() {
-    return _isWinnerDeclared;
+    return isWinnerDeclared;
   }
 
-  function getTieStatus() {
-    return _isGameTied;
-  }
 
   // get player names for DOM
   function getPlayerNameByMark(mark) {
@@ -118,25 +116,25 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { resetGameState, getPlayerNameByMark, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, getTieStatus, initializePlayerFromInput }
+  return { resetGameState, getPlayerNameByMark, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, checkForTie, initializePlayerFromInput }
 })();
 
 
 
 const DisplayController = (function () {
   //get elements
-  const GameBoardElement = getElement('.gameboard');
-  const winnerAnnouncement = getElement('#winner-message');
-  const startGameButton = getElement('#start_game_BTN');
-  const mainContainer = getElement('#container');
-  const gameboardContainer = getElement('#gameboard_container')
-  const playerOneNameElement = getElement('.firstPlayer');
-  const playerTwoNameElement = getElement('.secondPlayer');
-  const playerNameForm = getElement('#player_name_form');
-  const firstPlayerInput = getElement('#first_player_input');
-  const secondPlayerInput = getElement('#second_player_input')
-  const submitForm = getElement('#submit_form_BTN')
-  const playAgainButton = getElement('#play-again_BTN');
+  const GameBoardElement = getDOMElement('.gameboard');
+  const winnerAnnouncement = getDOMElement('#winner-message');
+  const startGameButton = getDOMElement('#start_game_BTN');
+  const mainContainer = getDOMElement('#container');
+  const gameboardContainer = getDOMElement('#gameboard_container')
+  const playerOneNameElement = getDOMElement('.firstPlayer');
+  const playerTwoNameElement = getDOMElement('.secondPlayer');
+  const playerNameForm = getDOMElement('#player_name_form');
+  const firstPlayerInput = getDOMElement('#first_player_input');
+  const secondPlayerInput = getDOMElement('#second_player_input')
+  const submitForm = getDOMElement('#submit_form_BTN')
+  const playAgainButton = getDOMElement('#play-again_BTN');
 
 
   // functions 
@@ -166,7 +164,7 @@ const DisplayController = (function () {
             (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
             colorWinningCells(winningCells);
             return;
-          } else if (GameFlowController.getTieStatus()) {
+          } else if (GameFlowController.checkForTie()) {
             playAgainButton.style.display = 'block';
             winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.';
             winnerAnnouncement.style.color = '#af1bc2';
@@ -197,7 +195,7 @@ const DisplayController = (function () {
   }
 
 
-  function getElement(element) {
+  function getDOMElement(element) {
     return document.querySelector(`${element}`);
   }
 
