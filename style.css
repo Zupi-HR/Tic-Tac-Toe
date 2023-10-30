@@ -20,7 +20,7 @@ body {
    padding: 15px 25px;
    font-size: 25px;
 }
-
+ 
 #start_game_BTN:hover {
     background-color: rgb(98, 238, 80);
     cursor: grab;

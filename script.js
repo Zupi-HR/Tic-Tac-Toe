@@ -1,28 +1,33 @@
 const GameBoard = (function () {
-  // Initialize an empty game board
+  // Stores the state of game board
   let gameboard = [
     null, null, null,
     null, null, null,
     null, null, null
   ];
 
+  // Reset the game board to its initial state
   function resetBoard() {
     gameboard = gameboard.map(cell => cell = null);
     console.log(gameboard);
   }
 
+  // Retrieves the value at a specific index on the game board
   function getCellValueAtIndex(index) {
     return gameboard[index];
   }
 
+  // Returns the total number of cells on the game board
   function getBoardCellCount() {
     return gameboard.length;
   }
 
+  // Returns the current state of the game board
   function getCurrentBoard() {
     return gameboard;
   }
 
+  // Places the current player's mark at the specified cell 
   function placePlayerMarkAt(cell) {
     gameboard[cell] = GameFlowController.getCurrentPlayerMark();
   }
@@ -30,16 +35,19 @@ const GameBoard = (function () {
   return { resetBoard, getCellValueAtIndex, getBoardCellCount, placePlayerMarkAt, getCurrentBoard };
 })();
 
+// Module for controlling the game flow
 const GameFlowController = (function () {
+  // Factory function to create a new player
   function createPlayer(name, mark) {
     return { name, mark }
   }
 
-
+  // Player variables and initial current Player
   let player1;
   let player2;
   let currentPlayer;
 
+  // Initializes players based on user input
   function initializePlayerFromInput(value) {
     if (value !== '' && !player1) {
       player1 = createPlayer(value, 'X');
@@ -50,16 +58,19 @@ const GameFlowController = (function () {
       console.log(player2);
     }
   }
-  // set current player
+
+  // Game state variables
   let isWinnerDeclared = false;
   let isGameTied = false;
 
+  // Reset the game state to its initial values
   function resetGameState() {
     isWinnerDeclared = false;
     isGameTied = false;
     currentPlayer = player1;
   }
 
+  // Find the indices of a specific mark on the game board
   function findIndicesOfMark(mark) {
     return GameBoard.getCurrentBoard().map((element, index) => {
       if (element === mark) {
@@ -68,15 +79,16 @@ const GameFlowController = (function () {
     }).filter(filteredIndex => filteredIndex !== undefined);
   }
 
+  // Checks if the game is a tie
   function checkForTie() {
     const boardIsFull = GameBoard.getCurrentBoard().every(cell => cell !== null);
     if (boardIsFull && !isWinnerDeclared) {
       console.log('it is tied');
       return isGameTied = true;
     }
-
   }
 
+  // Checks if there is a winner
   function checkForWinner(mark) {
     const indices = findIndicesOfMark(mark);
     console.log(indices);
@@ -95,23 +107,24 @@ const GameFlowController = (function () {
     }
   }
 
+  // Checks if a winner has been declared
   function hasWinner() {
     return isWinnerDeclared;
   }
 
 
-  // get player names for DOM
+  // Retrieves the name of the player by their mark
   function getPlayerNameByMark(mark) {
     return (mark === 'X') ? player1.name : player2.name;
   }
 
-
+  // Retrieves the mark of the current player
   function getCurrentPlayerMark() {
     return currentPlayer.mark;
   }
 
 
-  // toggle the player's turn 
+  // Switches the current player
   function switchPlayer(mark) {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
@@ -122,7 +135,7 @@ const GameFlowController = (function () {
 
 
 const DisplayController = (function () {
-  //get elements
+  // DOM elements
   const GameBoardElement = getDOMElement('.gameboard');
   const winnerAnnouncement = getDOMElement('#winner-message');
   const startGameButton = getDOMElement('#start_game_BTN');
@@ -137,7 +150,7 @@ const DisplayController = (function () {
   const playAgainButton = getDOMElement('#play-again_BTN');
 
 
-  // functions 
+  // Toggles the active player class based on the current player
   function toggleActivePlayerClass(currentPlayer, playerOneElement, playerTwoElement) {
     if (currentPlayer === 'X') {
       playerTwoElement.classList.remove('activePlayer');
@@ -148,6 +161,7 @@ const DisplayController = (function () {
     }
   }
 
+  // Handles the game outcome and updates the UI accordingly
   function handleGameOutcome(cell, winningCells) {
     if (GameFlowController.hasWinner()) {
       playAgainButton.style.display = 'block';
@@ -164,7 +178,7 @@ const DisplayController = (function () {
     }
   }
 
-
+  // Creates and sets up the board cells
   function createAndSetupBoardCells() {
     for (let i = 0; i < GameBoard.getBoardCellCount(); i++) {
       const cell = document.createElement('div');
@@ -185,6 +199,8 @@ const DisplayController = (function () {
       GameBoardElement.append(cell);
     }
   }
+
+  // Colors the winning cells
   function colorWinningCells(winningCells) {
     if (winningCells.length !== 0) {
       const gameboardCells = document.querySelectorAll('.cell');
@@ -259,7 +275,6 @@ const DisplayController = (function () {
 
 
 })();
-
 
 
 
