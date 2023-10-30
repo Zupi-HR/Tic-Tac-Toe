@@ -148,6 +148,22 @@ const DisplayController = (function () {
     }
   }
 
+  function handleGameOutcome(cell, winningCells) {
+    if (GameFlowController.hasWinner()) {
+      playAgainButton.style.display = 'block';
+      winnerAnnouncement.innerHTML = `Winner is: <span id='winner-message-name'>${GameFlowController.getPlayerNameByMark(cell.textContent)}</span>`;
+      (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
+      colorWinningCells(winningCells);
+      return;
+    } else if (GameFlowController.checkForTie()) {
+      playAgainButton.style.display = 'block';
+      winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.';
+      winnerAnnouncement.style.color = '#af1bc2';
+      (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
+      return;
+    }
+  }
+
 
   function createAndSetupBoardCells() {
     for (let i = 0; i < GameBoard.getBoardCellCount(); i++) {
@@ -163,19 +179,7 @@ const DisplayController = (function () {
           GameFlowController.switchPlayer(cell.textContent);
           const winningCells = GameFlowController.checkForWinner(cell.textContent);
           console.log(winningCells);
-          if (GameFlowController.hasWinner()) {
-            playAgainButton.style.display = 'block';
-            winnerAnnouncement.innerHTML = `Winner is: <span id='winner-message-name'>${GameFlowController.getPlayerNameByMark(cell.textContent)}</span>`;
-            (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
-            colorWinningCells(winningCells);
-            return;
-          } else if (GameFlowController.checkForTie()) {
-            playAgainButton.style.display = 'block';
-            winnerAnnouncement.textContent = 'The game has ended in a draw. Neither player could claim the victory.';
-            winnerAnnouncement.style.color = '#af1bc2';
-            (GameFlowController.getCurrentPlayerMark() !== 'X') ? removeClassFromElement(playerOneNameElement, 'activePlayer') : removeClassFromElement(playerTwoNameElement, 'activePlayer');
-            return;
-          }
+          handleGameOutcome(cell, winningCells);
         }
       });
       GameBoardElement.append(cell);
