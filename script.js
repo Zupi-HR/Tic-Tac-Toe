@@ -69,7 +69,7 @@ const GameFlowController = (function () {
   }
 
   function checkForTie() {
-    return _isGameTied = GameBoard.getCurrentBoard().every(cell => cell !== null);
+    return GameBoard.getCurrentBoard().every(cell => cell !== null);
 
   }
 
@@ -90,7 +90,7 @@ const GameFlowController = (function () {
       }
     } if (checkForTie() && !_isWinnerDeclared) {
       console.log('it is tied');
-      return;
+      return _isGameTied = true;
     }
   }
 
@@ -118,7 +118,7 @@ const GameFlowController = (function () {
     (mark === 'X') ? currentPlayer = player2 : currentPlayer = player1;
   }
 
-  return { resetGameState, getPlayerNameByMark, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, checkForTie, getTieStatus, initializePlayerFromInput }
+  return { resetGameState, getPlayerNameByMark, getCurrentPlayerMark, switchPlayer, hasWinner, checkForWinner, getTieStatus, initializePlayerFromInput }
 })();
 
 
@@ -247,6 +247,7 @@ const DisplayController = (function () {
     }
     winnerAnnouncement.textContent = '';
     createAndSetupBoardCells();
+    playAgainButton.style.display = 'none';
   })
 
 
