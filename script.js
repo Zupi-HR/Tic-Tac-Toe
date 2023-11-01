@@ -243,8 +243,8 @@ const DisplayController = (function () {
   submitForm.addEventListener('click', function (event) {
     event.preventDefault();
 
-    let firstPlayerName = firstPlayerInput.value;
-    let secondPlayerName = secondPlayerInput.value;
+    let firstPlayerName = firstPlayerInput.value.trim();
+    let secondPlayerName = secondPlayerInput.value.trim();
 
     GameFlowController.initializePlayerFromInput(firstPlayerName);
     GameFlowController.initializePlayerFromInput(secondPlayerName);
