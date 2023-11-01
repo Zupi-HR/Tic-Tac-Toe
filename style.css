@@ -117,3 +117,19 @@ body {
     background-color: rgb(27, 194, 27);
 }
 
+input {
+    border: none;
+    outline: 1px solid black;
+}
+
+
+input:invalid:required {
+   outline-color: red;
+}
+
+input:valid:required {
+    outline-color: green;
+}
+
+
+
